@@ -1,8 +1,17 @@
+import time
+import uuid
 import pandas as pd
 from datasets import load_dataset, DatasetDict
 from transformers import BertTokenizerFast, BertForSequenceClassification, Trainer, TrainingArguments
 import numpy as np
 import os
+import shutil
+for d in os.listdir('.'):
+    if d.startswith('results_classifier'):
+        try:
+            shutil.rmtree(d)
+        except Exception as e:
+            print(f"無法刪除 {d}: {e}")
 
 LABEL2ID = {
     "安全或初期探索": 0,
@@ -34,8 +43,14 @@ def main():
 
     model = BertForSequenceClassification.from_pretrained("bert-base-chinese", num_labels=3, id2label=ID2LABEL, label2id=LABEL2ID)
 
+    output_dir = f"results_classifier_{uuid.uuid4().hex}"
+
+    # 主動刪除 output_dir（如果已存在）
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+
     training_args = TrainingArguments(
-        output_dir="./results_classifier",
+        output_dir=output_dir,
         num_train_epochs=3,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=8,
