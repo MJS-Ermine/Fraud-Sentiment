@@ -13,24 +13,38 @@ __pycache__/
 # Virtual env
 venv/
 ENV/
+.venv/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Model artifacts
-finetuned_ws/pytorch_model.bin
-finetuned_ws/optimizer.pt
-finetuned_ws/scheduler.pt
-finetuned_ws/training_args.bin
-finetuned_ws/rng_state.pth
-finetuned_ws/*.bin
-finetuned_ws/*.pt
-finetuned_ws/*.safetensors
-finetuned_ws/*.json
-finetuned_ws/*.txt
-finetuned_ws/checkpoint-*/
+# Model artifacts & checkpoints
+finetuned_ws/
+results_classifier/
+*.pt
+*.bin
+*.safetensors
+*.ckpt
+*.json
+*.txt
+*.h5
+*.onnx
+*.pb
+*.tflite
+*.npz
+*.npy
+*.joblib
+*.pytorch
+*.state_dict
+*.tar
+*.tar.gz
 
-# Data
+# Trainer/transformers checkpoints
+checkpoint-*/
+runs/
+events.out.tfevents.*
+
+# Data files
 *.csv
 *.tsv
 *.xlsx
@@ -38,6 +52,7 @@ finetuned_ws/checkpoint-*/
 *.jsonl
 *.zip
 *.tar.gz
+*.parquet
 
 # OS
 .DS_Store
@@ -46,3 +61,16 @@ Thumbs.db
 # Others
 *.cache
 *.tmp
+
+# Test/pytest cache
+.pytest_cache/
+*.coverage
+
+# Ignore test/debug scripts (如不需追蹤)
+test_args.py
+test_hf_args.py
+
+# Ignore old/手動備份資料
+old/
+backup/
+bak/
