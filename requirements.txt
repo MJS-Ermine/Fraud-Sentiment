@@ -1,4 +1,8 @@
+# 建議 Python 3.10.x 或 3.11.x
 ckip-transformers>=0.3.2
-transformers>=4.0.0
-torch>=1.7.0
+transformers==4.37.2
+torch>=2.0.0
 datasets>=2.0.0
+pandas>=1.0.0
+accelerate==0.23.0
+fsspec==2025.3.0

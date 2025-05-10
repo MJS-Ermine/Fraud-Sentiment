@@ -1,5 +1,8 @@
 # Fraud-Sentiment
 
+> **重要環境相容性提醒：本專案建議使用 Python 3.10 或 3.11，transformers==4.37.2。請勿使用 Python 3.13 或 transformers 4.51.3 以上版本，否則將出現 API 不相容問題。**
+
+
 ## 專案定位與分工
 
 本倉庫為 [scam-bot](https://github.com/Hina-Lin/scam-bot) 專案的「模型分析與串接」子模組，**專責於金融詐騙對話的中文斷詞、關鍵字標註與理論階段分類模型的微調、推論與批次測試**。  
@@ -82,22 +85,30 @@ Fraud-Sentiment/
 
 ## 安裝與環境建議
 
-建議使用 Python 3.10+，可用 venv/conda 建立虛擬環境。
+- **建議 Python 版本：3.10.x 或 3.11.x**
+- 請勿使用 3.13（transformers 及部分依賴尚未完全支援）
+- 建議使用 venv 或 conda 建立虛擬環境
 
 ```bash
-# 建立虛擬環境
-python -m venv venv
+# 建立虛擬環境（以 Python 3.10 為例，請依實際安裝路徑調整）
+C:\Users\l7475\AppData\Local\Programs\Python\Python310\python.exe -m venv venv
 # 啟動虛擬環境
-source venv/bin/activate  # Windows: venv\Scripts\activate
+venv\Scripts\activate
+# 升級 pip
+python -m pip install --upgrade pip
 # 安裝依賴
 pip install -r requirements.txt
 ```
 
 必要套件（部分範例）：
 - ckip-transformers>=0.3.2
-- transformers>=4.0.0
-- torch>=1.7.0
+- transformers==4.37.2
+- torch>=2.0.0
 - datasets>=2.0.0
+- pandas>=1.0.0
+- accelerate==0.23.0
+- fsspec==2025.3.0
+
 
 ---
 
@@ -137,7 +148,23 @@ python line_dialog_eval.py --input data/sample_dialog.json
 ```bash
 pytest tests/
 ```
+## 金融詐騙對話三階段分類模型訓練與推論
 
+### 標註資料格式
+- `data/train.csv`、`data/test.csv`  
+  - 欄位：`text`（對話內容）、`label`（三階段標籤）
+
+### 訓練模型
+```bash
+python train_classifier.py
+```
+- 訓練完成後，模型儲存於 `finetuned_classifier/`
+
+### 單句推論
+```bash
+python predict_classifier.py "請幫我匯款到這個帳戶"
+```
+- 終端會輸出分類結果（如：高風險詐騙徵兆）
 ---
 
 ## 資料格式說明
@@ -165,8 +192,8 @@ pytest tests/
 
 ## 技術與工具
 
-- Python 3.10+
-- Hugging Face Transformers
+- Python 3.10/3.11
+- Hugging Face Transformers 4.37.2
 - PyTorch
 - pandas
 - pytest
@@ -176,8 +203,10 @@ pytest tests/
 
 ## 注意事項
 
+- **請務必使用 Python 3.10/3.11，transformers==4.37.2。**
 - 本倉庫僅聚焦於模型與分析流程，**不包含 API/Linebot 整合**
 - 大型模型檔案請勿直接上傳 GitHub，建議使用 git-lfs 或雲端連結
+
 
 ---
 
