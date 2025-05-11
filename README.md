@@ -66,6 +66,16 @@
 
 ```plaintext
 Fraud-Sentiment/
+├── pipeline/
+│   ├── __init__.py
+│   ├── pipeline.py                # 主 pipeline 類別
+│   ├── ws_module.py               # 斷詞模組
+│   ├── sentiment_module.py        # 情感分析模組
+│   ├── classifier_module.py       # 三階段分類模組
+│   ├── keyword_module.py          # 關鍵字標註模組
+│   ├── stage_rule_module.py       # 規則分類模組
+├── tests/                       # 單元測試
+│   ├── test_pipeline.py           # pipeline 自動化測試
 ├── infer_ws.py                  # 單句斷詞與關鍵字標註推論
 ├── batch_infer.py               # 批次推論與理論階段分類
 ├── theory_stage_classifier.py   # 理論階段分類模組
@@ -74,12 +84,78 @@ Fraud-Sentiment/
 ├── line_dialog_eval.py          # 模擬對話資料分析腳本
 ├── finetuned_ws/                # 微調後模型與 tokenizer
 ├── data/                        # 測試與微調資料
-├── tests/                       # 單元測試
 ├── requirements.txt             # 依賴管理
 ├── .gitignore
 ├── README.md
 ├── LICENSE
 ```
+---
+
+## Pipeline 架構與說明
+
+### 架構概述
+
+本專案採用模組化 pipeline 設計，將各核心功能串接為一條可擴充、可維護的資料處理流程。每個模組皆可 plug-in 你現有或新訓練的模型，主流程如下：
+
+```
+原始對話 → 斷詞 → 關鍵字標註 → 情感分析 → 三階段分類 → 規則分類 → 輸出結果
+```
+
+---
+
+### 各模組說明
+
+| 模組名稱           | 功能簡述                                                                 |
+|--------------------|--------------------------------------------------------------------------|
+| `WSModule`         | 中文斷詞，提升關鍵字與情感詞命中率（CKIP BERT 斷詞）                    |
+| `KeywordModule`    | 比對斷詞結果，標註高風險詐騙詞彙                                         |
+| `SentimentModule`  | 判斷每句對話的情感極性（正/負/中性），偵測詐騙話術中的情緒操控           |
+| `ClassifierModule` | 結合斷詞、關鍵字、情感分數等特徵，判斷對話所處三階段                     |
+| `StageRuleModule`  | 根據命中關鍵字進行理論階段分類，補強模型盲點                             |
+
+---
+
+### Pipeline 主流程範例
+
+```python
+from pipeline.pipeline import FraudDetectionPipeline
+from pipeline.ws_module import WSModule
+from pipeline.sentiment_module import SentimentModule
+from pipeline.classifier_module import ClassifierModule
+from pipeline.keyword_module import KeywordModule
+from pipeline.stage_rule_module import StageRuleModule
+
+# 初始化各模組
+ws = WSModule()
+sentiment = SentimentModule()
+classifier = ClassifierModule()
+keywords = KeywordModule({"匯款", "寶貝", "投資"})
+stage_rule = StageRuleModule()
+
+# 建立 pipeline
+pipeline = FraudDetectionPipeline(ws, sentiment, classifier, keywords, stage_rule)
+
+# 執行完整流程
+text = "寶貝，你現在方便匯款嗎？"
+result = pipeline.run(text)
+print(result)
+```
+
+---
+
+### Pipeline 測試方式
+
+```bash
+pytest tests/test_pipeline.py
+```
+
+---
+
+### 模組替換與擴充
+
+- 每個模組皆可 plug-in 你現有或新訓練的模型。
+- 只需實作對應的 class 並傳入 pipeline，即可無縫替換。
+- 例如：可將現有的 BERT 斷詞、finetuned_classifier、theory_stage_classifier 直接納入對應模組。
 
 ---
 
