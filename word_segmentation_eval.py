@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List, Set, Dict
 
 from ckip_transformers.nlp import CkipWordSegmenter
@@ -54,6 +55,21 @@ def print_report(keyword_hits: Dict[str, int], total: int) -> None:
     else:
         print(f"以下關鍵字未被正確切分：{missed}，建議進行模型微調或加強規則修正。")
 
+def save_report(keyword_hits: Dict[str, int], total: int, filename: str = "results/segmentation_report.txt") -> None:
+    """將命中統計與建議寫入文字檔。"""
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("=== 關鍵字命中統計 ===\n")
+        for k, v in keyword_hits.items():
+            f.write(f"{k}: {v}/{total}\n")
+        missed = [k for k, v in keyword_hits.items() if v == 0]
+        f.write("\n=== 建議 ===\n")
+        if len(missed) == 0:
+            f.write("所有關鍵字皆可被正確切分，模型可直接用於金融詐騙斷詞。\n")
+        else:
+            f.write(f"以下關鍵字未被正確切分：{missed}，建議進行模型微調或加強規則修正。\n")
+
 if __name__ == "__main__":
     hits = evaluate_model(TEST_SENTENCES, KEYWORDS)
-    print_report(hits, len(TEST_SENTENCES)) 
+    print_report(hits, len(TEST_SENTENCES))
+    save_report(hits, len(TEST_SENTENCES))

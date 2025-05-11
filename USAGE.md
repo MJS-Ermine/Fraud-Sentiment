@@ -89,11 +89,19 @@ python predict_classifier.py "請幫我匯款到這個帳戶"
 
 ---
 
-## 9. 單元測試
+## 9. 單元測試與 HTML 報告產生
 
 ```cmd
 pytest tests/
 ```
+建議安裝 pytest-html 以產生可分享的測試報告：
+
+```bash
+pip install pytest-html
+pytest tests/ --html=pytest_report.html
+```
+
+- 這會在專案目錄下產生 `pytest_report.html`，可直接分享給組員或老師瀏覽測試結果。
 
 ---
 

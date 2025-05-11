@@ -76,3 +76,4 @@ backup/
 bak/
 results_classifier_1746913963/tmp-checkpoint-1/rng_state.pth
 results_classifier_1746916121/tmp-checkpoint-1/rng_state.pth
+pytest_report.html

@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import pytest
 from word_segmentation_eval import segment_sentences, check_keywords, TEST_SENTENCES, KEYWORDS
